@@ -168,7 +168,7 @@ async function handleLogin() {
         localStorage.setItem("user_name", email.split("@")[0]);
 
         closeModal();
-        refreshNavbar();
+        refreshNavbar(); //
         showToast("로그인 성공! 환영합니다 ", "success");
 
     }catch (error) {
