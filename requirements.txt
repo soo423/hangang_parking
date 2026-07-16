@@ -69,4 +69,5 @@ numpy==1.26.4
 scipy==1.11.4
 lightgbm==4.6.0
 xgboost==3.2.0
+cryptography==41.0.4
 
