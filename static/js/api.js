@@ -1,8 +1,8 @@
 // 공통 API 호출 유틸리티
 
 // 서버 기본 주소 설정
-const BASE_URL = "http://127.0.0.1:8000";
-
+//const BASE_URL = "http://127.0.0.1:8000";
+const BASE_URL = "";
 // 개발 환경: http://127.0.0.1:8000
 // 배포 환경(Railway): https://프로젝트명.up.railway.app
 
@@ -139,6 +139,58 @@ async function apiDelete(path) {
     }
 }
 
+//JWT 페이로드 해독 함수(role / user_id 읽기
+function getPayload() {
+    const token = getToken();
+    if(!token) return null;
+    try {
+        return JSON.parse(atob(token.split(".")[1]));
+    } catch {
+        return null;
+    }
+}
+
+//현재 로그인한 사용자의 역할(role)을 반환
+function getUserRole() {
+    const payload = getPayload();
+    return payload ? payload.role : null;
+}
+
+//현재 로그인한 사용자가 관리자인지 여부를 반환
+function isAdmin() {
+    return getUserRole() === "admin";
+}
+
+//화면에 표시할 사용자 이름을 반환
+function getUserName() {
+    return localStorage.getItem("user_name") || "사용자";
+}
+
 // Toast 알림 함수
 // 화면 오른쪽 하단에 잠깐 나타났다 사라지는 알림을 표시
 // 로그인 성공/실패 알림에 사용
+
+function showToast(message, type = "success") {
+    const existing = document.getElementById("liveToast");
+    if(existing) existing.remove();
+
+    const toastHtml= `
+    <div id="liveToast" class="toast align-items-center text-bg-${type} border-0" role="alert" aria-live="assertive"
+    style="position:fixed; bottom:1rem; right:1rem; z-index:9999;">
+        <div class="d-flex">
+            <div class="toast-body fw-bold" id="toastMessage">${message}</div><!-- JS로 동적으로 메시지 내용 변경 -->
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="닫기"></button>
+        </div>
+    </div>
+    `;
+    document.body.insertAdjacentHTML("beforeend", toastHtml);
+    //insertAdjacentHTML("beforeend"): body 태그 닫히기 직전 HTML 삽입
+
+    //Bootstrap Toast 인스턴스 생성 후 표시
+    const toastEl = document.getElementById("liveToast");
+
+    // Bootstrap Toast 인스턴스 생성 & 표시, 3초 후 자동으로 닫힘
+    const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+    toast.show();
+}
+

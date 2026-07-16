@@ -11,6 +11,8 @@ from schema.request         import ReservationCreateRequest
 from schema.response        import ReservationResponse, ReservationDetailResponse
 from auth.jwt               import decode_access_token
 
+from routers.admin import expire_past_reservations
+
 router = APIRouter(tags=["예약"])
 
 bearer = HTTPBearer(auto_error=False)
@@ -72,6 +74,7 @@ def get_my_reservations_handler(
     session: Session = Depends(get_session),
     authorization: HTTPAuthorizationCredentials | None = Depends(bearer),
 ):
+    expire_past_reservations(session)
     # 로그인 확인
     if not authorization:
         raise HTTPException(
